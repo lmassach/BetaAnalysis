@@ -1,3 +1,10 @@
+# C++ compiler, ROOT
 *.pcm
 *.so
 *.d
+
+# MacOS stuff
+.DS_Store
+
+# VS code stuff
+.vscode/

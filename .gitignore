@@ -3,6 +3,10 @@
 *.so
 *.d
 
+# Python
+*.py[cod]
+__pycache__/
+
 # Data
 *.png
 *.root

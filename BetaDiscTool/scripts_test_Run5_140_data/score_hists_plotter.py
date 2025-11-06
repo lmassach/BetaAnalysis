@@ -16,9 +16,9 @@ x_min, x_max = all_data.min(), all_data.max()
 fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharex=True)
 
 bins = np.linspace(0, 1, 1000)
-axes[0].hist(data1, bins=bins, color='blue')
-axes[1].hist(data2, bins=bins, color='green')
-axes[2].hist(data3, bins=bins, color='red')
+axes[0].hist(data1, bins=bins, color="blue")
+axes[1].hist(data2, bins=bins, color="green")
+axes[2].hist(data3, bins=bins, color="red")
 
 axes[0].set_title("PMAX[LANGAUS⊗GAUS︀]-only model")
 axes[1].set_title("PMAX[LANGAUS⊗GAUS︀] + \nTMAX[GAUS⊗UNIFORM] model")
@@ -26,13 +26,13 @@ axes[2].set_title("PMAX[LANGAUS⊗GAUS︀] + \nPMAX/WIDTH@30%[LANGAUS⊗GAUS︀]
 
 for ax in axes:
     ax.set_xlabel("Probability of signal event")
-    ax.set_yscale('log')
-    ax.set_ylim(0.5,2E4)
+    ax.set_yscale("log")
+    ax.set_ylim(0.5, 2e4)
 
 axes[0].set_ylabel("Frequency")
-axes[0].set_xlim(0,0.3)
-#axes[0].set_ylim(None, max(max(np.histogram(data1, bins=bins)[0]),max(np.histogram(data2, bins=bins)[0]),max(np.histogram(data3, bins=bins)[0])))
-#axes[0].set_yscale('log')
+axes[0].set_xlim(0, 0.3)
+# axes[0].set_ylim(None, max(max(np.histogram(data1, bins=bins)[0]),max(np.histogram(data2, bins=bins)[0]),max(np.histogram(data3, bins=bins)[0])))
+# axes[0].set_yscale('log')
 
 plt.tight_layout()
 plt.show()

@@ -1,18 +1,23 @@
 import numpy as np
 import sys
 
+
 def gaussian(X, mu, sigma):
-  return np.exp((-(X-mu)**2)/(2*sigma**2))/(np.sqrt(2*np.pi)*sigma)
+    return np.exp((-((X - mu) ** 2)) / (2 * sigma**2)) / (np.sqrt(2 * np.pi) * sigma)
+
 
 def landau_approx(X, mu, sigma, kappa):
-  return np.exp((-(X-mu))/(kappa) - np.exp((-(X-mu))/(kappa)))/(np.sqrt(2*np.pi)*sigma)
+    return np.exp((-(X - mu)) / (kappa) - np.exp((-(X - mu)) / (kappa))) / (
+        np.sqrt(2 * np.pi) * sigma
+    )
+
 
 if len(sys.argv) != 3:
-  print("Usage: python simple_bayesian.py <P_sig> <X_val>")
-  sys.exit(1)
+    print("Usage: python simple_bayesian.py <P_sig> <X_val>")
+    sys.exit(1)
 
-#P_sig = 0.2
-#X_val = 10
+# P_sig = 0.2
+# X_val = 10
 P_sig = float(sys.argv[1])
 X_val = float(sys.argv[2])
 P_noise = 1 - P_sig

@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
 import ROOT
 import numpy as np
 
-file1 = ROOT.TFile("SPS_TestBeam_ROOT_files_Transcend_220V/SPS_TestBeam-2024_C1_80000.root")
-file2 = ROOT.TFile("SPS_TestBeam_ROOT_files_Transcend_220V/SPS_TestBeam-2024_C1_60000.root")
+file1 = ROOT.TFile(
+    "SPS_TestBeam_ROOT_files_Transcend_220V/SPS_TestBeam-2024_C1_80000.root"
+)
+file2 = ROOT.TFile(
+    "SPS_TestBeam_ROOT_files_Transcend_220V/SPS_TestBeam-2024_C1_60000.root"
+)
 df = ROOT.RDataFrame("wfm", file1)
 df_comp = ROOT.RDataFrame("wfm", file2)
 
@@ -10,7 +15,9 @@ num_bins = 5000
 w_min = df.Min("w").GetValue()
 w_max = df.Max("w").GetValue()
 
-hist_model = ROOT.RDF.TH1DModel("w_hist", "w Distribution;w;counts", num_bins, w_min, w_max)
+hist_model = ROOT.RDF.TH1DModel(
+    "w_hist", "w Distribution;w;counts", num_bins, w_min, w_max
+)
 hist_w = df.Histo1D(hist_model, "w")
 
 canvas_hist = ROOT.TCanvas("canvas_hist", "w Distribution", 800, 600)
@@ -63,24 +70,24 @@ df_numpy2["t"] = t_values
 df_numpy2["w"] = w_values
 
 for event_index in range(len(df_numpy["t"])):
-  t_ev = df_numpy["t"][event_index]
-  w_ev = df_numpy["w"][event_index]
-  t_arr = np.array(t_ev)
-  w_arr = np.array(w_ev)
-  if event_index == 1:
-    print(len(t_arr))
-  t_1000ev_1.append(t_arr.tolist())
-  w_1000ev_1.append(w_arr.tolist())
+    t_ev = df_numpy["t"][event_index]
+    w_ev = df_numpy["w"][event_index]
+    t_arr = np.array(t_ev)
+    w_arr = np.array(w_ev)
+    if event_index == 1:
+        print(len(t_arr))
+    t_1000ev_1.append(t_arr.tolist())
+    w_1000ev_1.append(w_arr.tolist())
 
 for event_index in range(len(df_numpy2["t"])):
-  t_ev = df_numpy2["t"][event_index]
-  w_ev = df_numpy2["w"][event_index]
-  t_arr = np.array(t_ev)
-  w_arr = np.array(w_ev)
-  if event_index == 1:
-    print(len(t_arr))
-  t_1000ev_2.append(t_arr.tolist())
-  w_1000ev_2.append(w_arr.tolist())
+    t_ev = df_numpy2["t"][event_index]
+    w_ev = df_numpy2["w"][event_index]
+    t_arr = np.array(t_ev)
+    w_arr = np.array(w_ev)
+    if event_index == 1:
+        print(len(t_arr))
+    t_1000ev_2.append(t_arr.tolist())
+    w_1000ev_2.append(w_arr.tolist())
 
 
 print(len(t_1000ev_1))

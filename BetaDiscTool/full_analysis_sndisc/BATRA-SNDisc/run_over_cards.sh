@@ -1,3 +1,4 @@
+#!/bin/bash
 for file in dirOfExampleCards/Run4_*.txt; do
     echo "Running analysis on $file ..."
     python3 analyseInPY3.py "$file"

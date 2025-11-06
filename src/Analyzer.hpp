@@ -23,10 +23,11 @@ class Analyzer : public TObject
   Analyzer(std::vector<double> voltage, std::vector<double> time);
   Analyzer();
   Analyzer(const Analyzer &a);
-  
+  Analyzer& operator=(const Analyzer& a);
+
   virtual ~Analyzer();
 
-  
+
   // Baseline Correction
 double Correct_Baseline( int ptN );
 //void Correct_Baseline2( std::vector<double> &voltageVec, double fractional_pts );
@@ -138,14 +139,14 @@ double Find_Time_Over_Threshold(const double thresholdLevel, const std::pair<dou
   const unsigned int  expect_count = 6
 );*/
 
-  
+
  private:
 
  std::vector<double> pvoltage;
  std::vector<double> ptime;
-  
+
   ClassDef(Analyzer,1)
-  
+
 };
 
 #endif

@@ -2,6 +2,7 @@
 *.pcm
 *.so
 *.d
+*ACLiC_dict*.h
 
 # Python
 *.py[cod]

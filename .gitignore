@@ -2,11 +2,14 @@
 *.pcm
 *.so
 *.d
+*.o
 *ACLiC_dict*.h
+*ACLiC_dict*.cxx
 
 # Python
 *.py[cod]
 __pycache__/
+venv/
 
 # Data
 *.png

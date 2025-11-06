@@ -1,6 +1,15 @@
-*.so
+# C++ compiler, ROOT
 *.pcm
+*.so
 *.d
+
+# Data
 *.png
 *.root
 *.csv
+
+# MacOS stuff
+.DS_Store
+
+# VS code stuff
+.vscode/

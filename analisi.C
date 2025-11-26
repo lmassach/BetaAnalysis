@@ -10,13 +10,6 @@
 #include <string>
 #include <sys/stat.h>
 #include <vector>
-// #include <glib-2.0/glib.h>
-// #include <glib-2.0/glib/gprintf.h>
-// #include <glib.h>
-// #include <glib/gprintf.h>
-// #include <gtk/gtk.h>
-// #include <unistd.h>
-// #include <dirent.h>
 
 //------ROOT----------------//
 #include "TTreeReaderArray.h"
@@ -40,10 +33,12 @@
 #include "include/ConfigFile.hpp"
 #include "src/Analyzer.hpp"
 
-void analisi() {
+using namespace std;
+
+void analisi(std::string const& configFile = "beta_config.ini") {
 
   // Config file definition
-  ConfigFile cf("beta_config.ini");
+  ConfigFile cf(configFile);
 
   // time window is the DAQ time window, that you can check on the oscilloscope.
   // search range is the window where signals occur
@@ -107,48 +102,6 @@ void analisi() {
   TFile *OutputFile = new TFile(output_filename, "recreate");
   TTree *OutTree = new TTree("Analysis", "Analysis");
 
-  /*  old way of saving files: fill config file with path to the raw and stats
-  directories, then provide the name of the raw; the stats will be saved in the
-  stats directory with stats+raw_filename std::string path =
-  cf.Value("HEADER","filename_path"); std::string file_in =
-  cf.Value("HEADER","input_filename"); std::string Filename =
-  path+"raw/"+file_in; std::cout << "Anaysis of file " << Filename << " started"
-  << endl; const char *filename = Filename.c_str(); TFile *file =
-  TFile::Open(filename); TTree *itree = dynamic_cast<TTree*>(file->Get("wfm"));
-  TTreeReader myReader("wfm", file);
-
-  // Output file & tree
-  std::string delimiter = "Sr";
-  std::string token_pre = file_in.substr(0, file_in.find(delimiter));
-  std::string token_post = file_in.substr(file_in.find(delimiter));
-  std::string outDir = path+"stats/"+token_pre;
-  const char *outdir = outDir.c_str();
-  std::string outFilename = path+"stats/"+token_pre+"stats_"+token_post;
-
-  cout<<" "<<endl;
-  cout<<"The output file will be: "<<endl;
-  cout<<outFilename<<endl;
-  cout<<" "<<endl;
-
-  int check;
-
-  struct stat st;
-  if( stat( outdir, &st ) == 0){
-
-    cout<<"output directory already exists"<<endl;
-
-  }else{
-
-    check = mkdir(outdir, 0777);
-    if(check==0) cout<<"directory succesfully created"<<endl;
-    else cout<<"something went wrong in creating the output directory..."<<endl;
-
-  }
-
-  const char *output_filename = outFilename.c_str();
-  TFile *OutputFile = new TFile(output_filename,"recreate");
-  TTree *OutTree = new TTree("Analysis","Analysis");*/
-
   // Variable declaration and Analyzer object
   const double time_const = cf.Value("HEADER", "time_scalar");
   const double voltage_const = cf.Value("HEADER", "voltage_scalar");
@@ -156,7 +109,6 @@ void analisi() {
       "HEADER",
       "sampling_points"); // number of sampling points, default is 1002,
                           // assuming a 50ns time window with 20 GS
-  int ch_number = cf.Value("HEADER", "active_channels");
 
   std::vector<double> Pmax1;
   std::vector<double> Pmax1Fit;
@@ -248,8 +200,6 @@ void analisi() {
   TTreeReaderArray<double> currentReader1(myReader, "i_current");
   TTreeReaderArray<double> biasReader1(myReader, "v_bias");
 
-  // int enable_channel = 0;
-  // for(int ch_counter=1; ch_counter<=ch_number; ch_counter++ ){
   for (int ch_counter = 1; ch_counter <= 8; ch_counter++) {
 
     if (active_channel[ch_counter - 1] == 1) {
@@ -324,10 +274,6 @@ void analisi() {
       w1_inner.reserve(221560);
       t1_inner.reserve(221560);
 
-      // int enable_channel_1 = cf.Value("ACTIVE_CHANNEL", Form("ch%i",
-      // ch_counter) ); int invert_channel_1 = cf.Value("INVERT_SIGNAL",
-      // Form("ch%i", ch_counter) );
-
       if (active_channel[ch_counter - 1] == 1) {
 
         if (j_counter == 0) {
@@ -366,7 +312,7 @@ void analisi() {
 
         if (w1_inner.size() < maxIndex || t1_inner.size() < maxIndex) {
 
-          cout << "Voltage or Time vector less than 1000 entries. Skipping "
+          cout << "Voltage or Time vector less than sampling_points entries. Skipping "
                   "whole event"
                << endl;
           continue;

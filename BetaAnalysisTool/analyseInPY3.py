@@ -123,6 +123,7 @@ def main():
                 output_name_array.append(output_name_const)
             except Exception as e:
                 print(f"Error reading {root_file}: {e}")
+                raise
 
     if len(file_array) == 0:
         print(f"[BETA ANALYSIS] : [FILE READER] No files found.")

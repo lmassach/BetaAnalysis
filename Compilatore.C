@@ -20,7 +20,7 @@
 #include <TSystemFile.h>
 #include <TTree.h>
 
-void Compilatore() {
+void Compilatore(std::string const& configFile = "beta_config.ini") {
 
   gSystem->CompileMacro("src/general.cpp", "kg");
   gSystem->CompileMacro("src/Chameleon.cpp", "kg");

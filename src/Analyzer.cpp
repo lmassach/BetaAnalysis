@@ -859,7 +859,7 @@ Analyzer::Find_Rise_Time_with_GausFit(const std::pair<double, double> Pmax,
   double rise = 0.0;
 
   // unsigned int itop = this->pvoltage.size()-2, ibottom = 0;
-  unsigned int itop = 500, ibottom = 500;
+  unsigned int itop = 400, ibottom = 400;
 
   bool ten = true, ninety = true;
 
@@ -915,7 +915,7 @@ Analyzer::Find_Fall_Time_with_GausFit(const std::pair<double, double> Pmax,
   double rise = 0.0;
 
   // unsigned int itop = this->pvoltage.size()-2, ibottom = 0;
-  unsigned int itop = 500, ibottom = 500;
+  unsigned int itop = 400, ibottom = 400;
 
   bool ten = true, ninety = true;
   std::size_t npoints = this->pvoltage.size() - 1;

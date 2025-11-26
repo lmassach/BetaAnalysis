@@ -3,14 +3,15 @@
 
 # Specify the list of files to read and analyse here, in comma-separated format string
 
-files = "/home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-90V_Ch2-90V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-100V_Ch2-100V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-110V_Ch2-110V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-120V_Ch2-120V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-125V_Ch2-125V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-130V_Ch2-128V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-135V_Ch2-128V_Ch3-2750V_trig230V.root,
-         /home/lmassa/Documents/exflu/BetaAnalysis/data/stats/Run4_W5_RT_Ex1/Sr_Run4_Ch1-140V_Ch2-130V_Ch3-2750V_trig230V.root"
+files = "../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-220V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-230V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-240V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-250V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-260V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-270V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-280V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-290V_Ch1-2750V_trig2750V.root,
+         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-300V_Ch1-2750V_trig2750V.root"
 
 run_safe_mode = True
 
@@ -21,16 +22,21 @@ run_safe_mode = True
 # Specify channel with the board type, e.g. "DUT, SC" so during analysis the area can be accurately converted to charge
 # Also specify the thickness of the sensor, in microns
 
-CH_1 = "REF, SC"
-CH_2 = "DUT, SC, 30"
-CH_3 = "DUT, SC, 30"
-CH_4 = "MCP, None, 5, 2"
+#CH_1 = "REF, SC"
+#CH_2 = "DUT, SC, 30"
+#CH_3 = "DUT, SC, 30"
+#CH_4 = "MCP, None, 5, 2"
+CH_1 = "DUT, SC, 30"
+CH_2 = "MCP, None, 5, 2"
+CH_3 = 0
+CH_4 = 0
 CH_5 = 0
 CH_6 = 0
 CH_7 = 0
 CH_8 = 0
 
 # Specify what results and fits are to be performed
+
 ### First run
 #tmax = True
 #pmax = True
@@ -40,10 +46,11 @@ CH_8 = 0
 #charge = False
 #rms = False
 #timeres = False
+
 ### Second run
-tmax = False
-pmax = False
-negpmax = False
+tmax = True
+pmax = True
+negpmax = True
 amplitude = True
 risetime = True
 charge = True
@@ -72,13 +79,15 @@ timeres_nB_xL_xU = 200,-2.0,0.0
 # PMAX_LOWER has to be an array of comma-separated values of length equal to the number of files.
 # If the value is 0 (or [] or 0 for PMAX_LOWER), no cut will be performed.
 
-CH1_cut = 0,0,0,0,0
+#CH1_cut = 0,0,0,0,0
 #CH2_cut = 0,0,0,0,0
-#CH3_cut = 0,0,0,0,0
-#CH4_cut = 0,0,0,0,0
-CH2_cut = [10,15,20,25,30,30,30,40],0,0,-1.0,2.0
-CH3_cut = [10,15,20,25,30,30,30,40],0,0,-1.0,2.0
-CH4_cut = [40,40,40,40,40,40,40,40],540,0,-1.0,2.0
+CH1_cut = [15,15,20,25,30,40,40,40,50],0,0,-3,-1
+CH2_cut = [15,15,15,15,15,15,15,15,15],100,0,-0.5,1
+CH3_cut = 0,0,0,0,0
+CH4_cut = 0,0,0,0,0
+#CH2_cut = [10,15,20,25,30,30,30,40],0,0,-1.0,2.0
+#CH3_cut = [10,15,20,25,30,30,30,40],0,0,-1.0,2.0
+#CH4_cut = [40,40,40,40,40,40,40,40],540,0,-1.0,2.0
 CH5_cut = 0,0,0,0,0
 CH6_cut = 0,0,0,0,0
 CH7_cut = 0,0,0,0,0

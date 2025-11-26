@@ -1214,7 +1214,7 @@ double Analyzer::Find_Time_At_Threshold_with_GausFit(
     const double thresholdLevel, const std::pair<double, double> Pmax,
     unsigned int imax) {
 
-  double thr = thresholdLevel;
+  double thr = thresholdLevel / 1e3;  // TODO Should I use voltage_scalar instead of 1e3 here?
 
   double timeAtThreshold = 0.0, timeBelowThreshold = 0.0;
 
@@ -1252,7 +1252,7 @@ double Analyzer::Find_Time_At_Threshold_Falling_Edge_with_GausFit(
     const double thresholdLevel, const std::pair<double, double> Pmax,
     unsigned int imax) {
 
-  double thr = thresholdLevel;
+  double thr = thresholdLevel / 1e3;  // TODO Should I use voltage_scalar instead of 1e3 here?
 
   double timeAtThreshold = 0.0, timeBelowThreshold = 0.0;
 
@@ -1301,8 +1301,8 @@ Analyzer::Find_Time_Over_Threshold(const double first_thresholdLevel,
                                    const std::pair<double, unsigned int> Pmax,
                                    const double second_thresholdLevel) {
 
-  double thr1 = first_thresholdLevel;
-  double thr2 = second_thresholdLevel;
+  double thr1 = first_thresholdLevel / 1e3;  // TODO Should I use voltage_scalar instead of 1e3 here?
+  double thr2 = second_thresholdLevel / 1e3;  // TODO Should I use voltage_scalar instead of 1e3 here?
 
   double timeAtThreshold1 = 0.0, timeBelowThreshold1 = 0.0;
   double timeAtThreshold2 = 0.0, timeBelowThreshold2 = 0.0;

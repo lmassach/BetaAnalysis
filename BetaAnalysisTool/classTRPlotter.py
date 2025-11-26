@@ -54,7 +54,7 @@ class plotTRVar:
 
         for j in range(len(channel_array)):
             if channel_array[j][0] == 1:
-                bias = getBias(str(file), j)
+                bias = getBias(file, j)
                 arr_of_biases.append(bias)
                 duts_to_analyse.append(
                     [

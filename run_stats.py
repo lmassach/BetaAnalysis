@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+# import sys
 from tempfile import NamedTemporaryFile
 import ROOT
 
@@ -31,6 +32,15 @@ for src in SRC_FILES:
 print()
 
 for ifp in args.input_files:
+    # # Use fork to process each file in an isolated process
+    # pid = os.fork()
+    # if pid != 0:
+    #     print("[PARENT] Waiting child", pid)
+    #     os.waitpid(pid, 0)
+    #     print("[PARENT] Child done")
+    #     continue
+    # print("[CHILD] Running analysis")
+
     # Pick the output file name and write a modified config file
     ifd, ifn = os.path.split(ifp)
     ofp = os.path.join(ifd, f"{args.out_prefix}{ifn}")
@@ -46,3 +56,7 @@ for ifp in args.input_files:
         cfg.flush()
         # Run the analysis
         ROOT.analisi(cfg.name)
+
+    # # Exit the child (forked) process and return control to main process
+    # print("[CHILD] Done")
+    # sys.exit()

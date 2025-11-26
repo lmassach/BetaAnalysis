@@ -50,7 +50,7 @@ class plotVar:
 
         channel_of_dut = []
         for j in range(len(channel_array)):
-            bias = getBias(str(file), j)
+            bias = getBias(file, j)
             if (channel_array[j][0] == 1) or (channel_array[j][0] == 2):
                 if channel_array[j][0] == 1:
                     channel_of_dut.append(j)

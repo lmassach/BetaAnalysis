@@ -106,7 +106,7 @@ def plot_langaus(
                 D = -50
             if E == 0:
                 E = 50
-            bias_of_channel = getBias(str(file), ch_ind)
+            bias_of_channel = getBias(file, ch_ind)
             for entry in tree:
                 pmax_sig = entry.pmax[ch_ind]
                 negpmax_sig = entry.negpmax[ch_ind]

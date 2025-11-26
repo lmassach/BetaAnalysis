@@ -3,15 +3,8 @@
 
 # Specify the list of files to read and analyse here, in comma-separated format string
 
-files = "../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-220V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-230V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-240V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-250V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-260V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-270V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-280V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-290V_Ch1-2750V_trig2750V.root,
-         ../data/Run0_Run0_EXFLU1_W5_15e14_35Cneg/stats_Sr_Run0_Ch0-300V_Ch1-2750V_trig2750V.root"
+files = "/home/lmassa/Documents/exflu/TB10/beta_tests_before_TB10/Run0_SC203_W4_test/stats_test_Sr_Run0_Ch1-100V_trig2750V.root,
+         /home/lmassa/Documents/exflu/TB10/beta_tests_before_TB10/Run0_SC203_W4_test/stats_test_Sr_Run0_Ch1-110V_trig2750V.root"
 
 run_safe_mode = True
 
@@ -81,8 +74,8 @@ timeres_nB_xL_xU = 200,-2.0,0.0
 
 #CH1_cut = 0,0,0,0,0
 #CH2_cut = 0,0,0,0,0
-CH1_cut = [15,15,20,25,30,40,40,40,50],0,0,-3,-1
-CH2_cut = [15,15,15,15,15,15,15,15,15],100,0,-0.5,1
+CH1_cut = [30,50],0,0,-1.5,0.5
+CH2_cut = [30,30],100,0,-1,1
 CH3_cut = 0,0,0,0,0
 CH4_cut = 0,0,0,0,0
 #CH2_cut = [10,15,20,25,30,30,30,40],0,0,-1.0,2.0

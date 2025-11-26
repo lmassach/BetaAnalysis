@@ -1,5 +1,6 @@
 # proc_tools.py
 
+from functools import lru_cache
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize, curve_fit
@@ -92,22 +93,26 @@ def get_fit_results(
     return df_of_results
 
 
-def getBias(filename, chnum):
-    pattern_ch = f"Ch{chnum}"
-    ch_match = re.search(pattern_ch, filename)
-    if ch_match:
-        start_index = ch_match.end()
-        substring_to_search = filename[start_index:]
+@lru_cache  # Read value once and cache it, return cached value on subsequent calls
+def getBias(t_file, chnum):
+    tree = t_file['Analysis']
+    tree.GetEntry(0)
+    return f"{tree.V[chnum]:.0f}V"
+    # pattern_ch = f"Ch{chnum}"
+    # ch_match = re.search(pattern_ch, filename)
+    # if ch_match:
+    #     start_index = ch_match.end()
+    #     substring_to_search = filename[start_index:]
 
-        pattern_bias = r"-(\d{2,4}V)"
-        bias_match = re.search(pattern_bias, substring_to_search)
-        if bias_match:
-            return bias_match.group(1)
-        else:
-            print("[GetBias] : BIAS NOT FOUND")
-            return None
-    else:
-        return None
+    #     pattern_bias = r"-(\d{2,4}V)"
+    #     bias_match = re.search(pattern_bias, substring_to_search)
+    #     if bias_match:
+    #         return bias_match.group(1)
+    #     else:
+    #         print("[GetBias] : BIAS NOT FOUND")
+    #         return "0V"
+    # else:
+    #     return "0V"
 
 
 def landau_tr_quad_fit(Q_df, tr_df, tre_df):

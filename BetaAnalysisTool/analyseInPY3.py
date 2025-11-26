@@ -109,16 +109,23 @@ def main():
                 theFile = root.TFile(root_file)
                 file_array.append(theFile)
                 tree_array.append(theFile.Get("Analysis"))
-                output_name_w_bias = ""
-                for ch_ind, ch_val in enumerate(config["channels"]):
-                    if ch_val[0] == 1:
-                        bias_after_channel = re.search(rf"Ch{ch_ind}-(\d+)V_", pattern)
-                        output_name_w_bias = (
-                            output_name_w_bias
-                            + f"_Ch{ch_ind}-"
-                            + bias_after_channel.group(1)
-                            + "V"
-                        )
+                # # Old naming: look for Ch#-???V on the expected channels (wrong numbers)
+                # output_name_w_bias = ""
+                # for ch_ind, ch_val in enumerate(config["channels"]):
+                #     if ch_val[0] == 1:
+                #         m = re.search(rf"Ch{ch_ind}-(\d+)V_", root_file)
+                #         bias_after_channel = m.group(1) if m else "0"
+                #         output_name_w_bias = (
+                #             output_name_w_bias
+                #             + f"_Ch{ch_ind}-"
+                #             + bias_after_channel
+                #             + "V"
+                #         )
+                # # New naming: look for Run# and Ch#-???V and trig???V for any ch num
+                # for m in re.finditer(r"Run\d+|Ch\d+-\d+V|trig\d+V", root_file):
+                #     output_name_w_bias += f"_{m[0]}"
+                # # New naming: just take the whole input file name
+                output_name_w_bias = os.path.splitext(os.path.basename(root_file))[0]
                 output_name_const = "hist_" + output_name_const + output_name_w_bias
                 output_name_array.append(output_name_const)
             except Exception as e:

@@ -8,10 +8,6 @@ import ROOT as root
 from ROOT import TF1
 from scipy.optimize import curve_fit
 
-"""
-from proc_tools import get_fit_results, hist_tree_file_basics, plot_fit_curves, getBias
-"""
-
 root.gErrorIgnoreLevel = root.kWarning
 import warnings
 
@@ -86,22 +82,7 @@ def get_fit_results(
 def getBias(t_file, chnum):
     tree = t_file['Analysis']
     tree.GetEntry(0)
-    return f"{tree.V[chnum]:.0f}V"
-    # pattern_ch = f"Ch{chnum}"
-    # ch_match = re.search(pattern_ch, filename)
-    # if ch_match:
-    #     start_index = ch_match.end()
-    #     substring_to_search = filename[start_index:]
-
-    #     pattern_bias = r"-(\d{2,4}V)"
-    #     bias_match = re.search(pattern_bias, substring_to_search)
-    #     if bias_match:
-    #         return bias_match.group(1)
-    #     else:
-    #         print("[GetBias] : BIAS NOT FOUND")
-    #         return "0V"
-    # else:
-    #     return "0V"
+    return float(tree.V[chnum])
 
 
 def landau_tr_quad_fit(Q_df, tr_df, tre_df):
@@ -133,24 +114,24 @@ def hist_tree_file_basics(
         "dvdt": "dV/dt / mV/ns",
         "dvdt_2080": "dV/dt[20%:80%] / mV/ns",
     }
+    histName = f"CH {ch} {biasVal:.0f}V"
     thisHist = root.TH1F(
-        "CH " + str(ch) + " " + biasVal,
-        var + ";" + var_dict[var] + ";Events",
+        histName,
+        f"{var};{var_dict[var]};Events",
         nBins,
         xLower,
         xUpper,
     )
     if (var == "pmax") or (var == "negpmax") or (var == "tmax"):
-        tree.Draw(var + "[" + str(ch) + "]>>CH " + str(ch) + " " + biasVal, "event>-1")
-    else:
-        tree.Draw(var + "[" + str(ch) + "]>>CH " + str(ch) + " " + biasVal, cut_cond)
+        cut_cond = "event>-1"
+    tree.Draw(f"{var}[{ch}]>>{histName}", cut_cond)
     thisHist.SetLineWidth(2)
     thisHist.SetLineColor(index + 1)
     return thisHist
 
 
 def plot_fit_curves(xLower, xUpper, fit_type, hist_to_fit, index, biasVal):
-    thisFit = TF1(fit_type + "_hist" + biasVal, fit_type, xLower, xUpper)
+    thisFit = TF1(f"{fit_type}_hist{biasVal:.0f}V", fit_type, xLower, xUpper)
     hist_to_fit.Fit(thisFit, "Q")
     thisFit.SetLineWidth(3)
     thisFit.SetLineColor(index + 1)

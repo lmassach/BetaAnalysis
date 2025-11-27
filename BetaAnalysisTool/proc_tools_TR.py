@@ -6,10 +6,6 @@ import numpy as np
 import ROOT as root
 from ROOT import TF1
 
-"""
-from proc_tools_TR import get_fit_results_TR, hist_tree_file_basics, plot_fit_curves, getBias
-"""
-
 root.gErrorIgnoreLevel = root.kWarning
 import warnings
 
@@ -195,14 +191,15 @@ def get_fit_results_TR(
 def hist_tree_file_timeres(
     tree, file, var, ch, nBins, xLower, xUpper, biasVal, cut_cond
 ):
+    histName = f"CH {ch} {biasVal:.0f}V"
     thisHist = root.TH1F(
-        "CH " + str(ch) + " " + biasVal,
+        histName,
         var + ";tn-tn+1 / ns ;Events",
         nBins,
         xLower,
         xUpper,
     )
-    tree.Draw(var + ">>CH " + str(ch) + " " + biasVal, cut_cond)
+    tree.Draw(f"{var}>>{histName}", cut_cond)
     thisHist.SetLineWidth(2)
     thisHist.SetLineColor(ch + 1)
     return thisHist
@@ -210,7 +207,7 @@ def hist_tree_file_timeres(
 
 def plot_fit_curves(xLower, xUpper, fit_type, hist_to_fit, channel_index, biasVal):
     thisFit = TF1(
-        fit_type + "_hist" + biasVal + " CH " + str(channel_index + 1),
+        f"{fit_type}_hist{biasVal:.0f}V CH {channel_index+1}",
         fit_type,
         xLower,
         xUpper,

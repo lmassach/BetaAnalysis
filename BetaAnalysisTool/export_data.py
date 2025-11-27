@@ -185,7 +185,6 @@ def direct_to_table(
             dfs_to_concat.append(df_tr)
 
     dfs_comb = pd.concat(dfs_to_concat, axis=1)
-    dfs_comb.loc[:, "Bias"] = dfs_comb["Bias"].str[:-1].astype(int)
     dfs_comb["Thickness / um"] = thickness_col
     dfs_comb["E field / V/cm"] = 10000 * (dfs_comb["Bias"] / dfs_comb["Thickness / um"])
     dfs_comb.loc[:, "E field / V/cm"] = dfs_comb["E field / V/cm"] // 1

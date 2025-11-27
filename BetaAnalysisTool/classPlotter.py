@@ -93,7 +93,7 @@ class plotVar:
 
         legend = root.TLegend(0.7, 0.7, 0.9, 0.9)
         for i in range(len(valid_hists)):
-            legend.AddEntry(valid_hists[i], arr_of_biases[i] + " CH " + str(i + 1), "l")
+            legend.AddEntry(valid_hists[i], f"{arr_of_biases[i]:.0f}V CH {i+1}", "l")
         legend.Draw()
 
         out_dir = os.path.join(os.path.dirname(self.save_name), self.var)

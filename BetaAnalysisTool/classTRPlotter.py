@@ -142,7 +142,7 @@ class plotTRVar:
         for i in range(len(hists_to_plot)):
             legend.AddEntry(
                 hists_to_plot[i],
-                arr_of_biases[i] + " CH " + str(channel_of_dut[i]),
+                f"{arr_of_biases[i]}V CH {channel_of_dut[i]}",
                 "l",
             )
         legend.Draw()

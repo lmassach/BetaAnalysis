@@ -30,9 +30,9 @@ CH_8 = 0
 # Specify what results and fits are to be performed
 
 ### First run
-#tmax = True
-#pmax = True
-#negpmax = True
+tmax = True
+pmax = True
+negpmax = True
 #amplitude = False
 #risetime = False
 #charge = False
@@ -40,9 +40,9 @@ CH_8 = 0
 #timeres = False
 
 ### Second run
-tmax = False
-pmax = False
-negpmax = False
+#tmax = False
+#pmax = False
+#negpmax = False
 amplitude = True
 risetime = True
 charge = True

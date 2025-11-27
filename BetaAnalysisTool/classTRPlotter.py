@@ -1,22 +1,7 @@
 # classPlotter.py
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import minimize
-from scipy.stats import poisson
-import ROOT as root
-from ROOT import TF1
-from scipy.special import gammaln
-import math
-from math import exp, sqrt, pi
-import pandas as pd
-import argparse
-import glob
-import re
 import os
-import csv
-import math
-import sys
+import ROOT as root
 
 from proc_tools_TR import get_fit_results_TR, hist_tree_file_timeres, plot_fit_curves
 from proc_tools import getBias
@@ -162,13 +147,11 @@ class plotTRVar:
             )
         legend.Draw()
 
-        if not os.path.exists("timeres"):
-            os.makedirs("timeres")
-        c1.SaveAs("timeres/" + self.save_name)
-        print(
-            f"[BETA ANALYSIS]: [TIME RESOLUTION] Saved time resolution as timeres/"
-            + self.save_name
-        )
+        out_dir = os.path.join(os.path.dirname(self.save_name), "timeres")
+        os.makedirs(out_dir, exist_ok=True)
+        out_fp = os.path.join(out_dir, os.path.basename(self.save_name))
+        c1.SaveAs(out_fp)
+        print(f"[BETA ANALYSIS]: [TIME RESOLUTION] Saved time resolution as {out_fp!r}")
 
         arr_of_fits = []
         for i, nom_up_down_hists in enumerate(arr_of_hists):

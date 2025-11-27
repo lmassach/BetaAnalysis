@@ -1,24 +1,9 @@
 # export_data.py
 
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import minimize
-from scipy.stats import poisson
-import ROOT as root
-from ROOT import TF1
-from scipy.special import gammaln
-import math
-from math import exp, sqrt, pi
 import pandas as pd
-import argparse
-import glob
-import re
-import os
-import csv
-import math
-import sys
 
-from proc_tools import getBias, landau_tr_quad_fit
+from proc_tools import landau_tr_quad_fit
 
 
 def direct_to_table(

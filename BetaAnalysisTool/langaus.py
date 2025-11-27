@@ -1,29 +1,12 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import scipy
-from scipy.optimize import minimize
-from scipy.stats import poisson, median_abs_deviation
-import ROOT as root
-from ROOT import TF1
-from scipy.special import gammaln
 import math
-from math import exp, sqrt, pi
-import pandas as pd
-import argparse
-import glob
-import re
 import os
-import csv
-import math
-import plotly.graph_objects as go
-
-import sys
-from datetime import datetime
-import matplotlib.pylab as plt
-import matplotlib.axes as axes
-from array import array
 from landaupy import langauss
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
 from scipy.optimize import curve_fit
+from scipy.stats import median_abs_deviation
 
 from proc_tools import getBias
 
@@ -227,18 +210,11 @@ def plot_langaus(
             )
         )
 
-        if not os.path.exists(var):
-            os.makedirs(var)
-        fig.write_image(var + "/" + savename + "_Ch" + str(ch_ind) + ".png")
-        print(
-            "[BETA ANALYSIS]: [LANGAUS PLOTTER] Saved file "
-            + var
-            + "/"
-            + savename
-            + "_Ch"
-            + str(ch_ind)
-            + ".png"
-        )
+        out_dir = os.path.join(os.path.dirname(savename), var)
+        os.makedirs(out_dir, exist_ok=True)
+        out_fp = f"{os.path.join(out_dir, os.path.basename(savename))}_Ch{ch_ind}.png"
+        fig.write_image(out_fp)
+        print(f"[BETA ANALYSIS]: [LANGAUS PLOTTER] Saved file {out_fp!r}")
 
     if (var != "dvdt") & (var != "dvdt_2080"):
         var = var.capitalize()

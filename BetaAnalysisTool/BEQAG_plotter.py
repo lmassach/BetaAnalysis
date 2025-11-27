@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-import sys
+import argparse
 import os
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import argparse
+import pandas as pd
 
 
 def plot_with_uncertainties(ax, df, x_col, y_col, yerr_col, group_col="Channel"):

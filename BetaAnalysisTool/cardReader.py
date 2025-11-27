@@ -1,6 +1,7 @@
 # cardReader.py
 
 import re
+import glob
 
 
 def read_text_card(file_path):
@@ -49,9 +50,12 @@ def read_text_card(file_path):
             if match:
                 if current_key and current_value:
                     if current_key == "files":
-                        config[current_key] = (
-                            "".join(current_value).strip('",').split(",")
-                        )
+                        config[current_key] = []
+                        for pattern in "".join(current_value).strip('",').split(","):
+                            matches = glob.glob(pattern)
+                            if not matches:
+                                print(f"!! WARNING No file matches {pattern!r}")
+                            config[current_key].extend(matches)
                     else:
                         config[current_key] = "".join(current_value).strip()
                     current_key = None

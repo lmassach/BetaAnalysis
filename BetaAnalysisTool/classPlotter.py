@@ -1,22 +1,7 @@
 # classPlotter.py
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import minimize
-from scipy.stats import poisson
-import ROOT as root
-from ROOT import TF1
-from scipy.special import gammaln
-import math
-from math import exp, sqrt, pi
-import pandas as pd
-import argparse
-import glob
-import re
 import os
-import csv
-import math
-import sys
+import ROOT as root
 
 from proc_tools import get_fit_results, hist_tree_file_basics, plot_fit_curves, getBias
 
@@ -109,15 +94,13 @@ class plotVar:
         legend = root.TLegend(0.7, 0.7, 0.9, 0.9)
         for i in range(len(valid_hists)):
             legend.AddEntry(valid_hists[i], arr_of_biases[i] + " CH " + str(i + 1), "l")
-
         legend.Draw()
-        if not os.path.exists(self.var):
-            os.makedirs(self.var)
-        c1.SaveAs(self.var + "/" + self.save_name)
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] Saved {self.var} as {self.var}/"
-            + self.save_name
-        )
+
+        out_dir = os.path.join(os.path.dirname(self.save_name), self.var)
+        os.makedirs(out_dir, exist_ok=True)
+        out_fp = os.path.join(out_dir, os.path.basename(self.save_name))
+        c1.SaveAs(out_fp)
+        print(f"[BETA ANALYSIS]: [PLOTTER] Saved {self.var} as {out_fp!r}")
 
         if (self.fit) is not None:
             arr_of_fits = [fit for fit in arr_of_fits if fit is not None]

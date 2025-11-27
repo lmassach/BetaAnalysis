@@ -1,21 +1,10 @@
 #!/usr/bin/env python3
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import minimize
-from scipy.stats import poisson
-import ROOT as root
-from ROOT import TF1
-from scipy.special import gammaln
-import math
-from math import exp, sqrt, pi
-import pandas as pd
 import argparse
-import glob
-import re
 import os
-import csv
-import math
+import shutil
 import sys
+import pandas as pd
+import ROOT as root
 
 from classPlotter import plotVar
 from classTRPlotter import plotTRVar
@@ -40,10 +29,17 @@ def main():
     thicknesses = [thickness for thickness in thicknesses if thickness != "nDUT"]
     output_name = os.path.splitext(os.path.basename(args.config))[0]
 
-    file_list = config.get("files", [])
-    channels = config.get("channels", [[0, 1]] * 8)
+    print(f"[BETA ANALYSIS] : [FILE READER] Reading files [")
+    for fn in config["files"]:
+        print(f"    {fn!r},")
+    print("]")
 
-    print(f"[BETA ANALYSIS] : [FILE READER] Reading files {file_list}.")
+    output_dir = os.path.dirname(config["files"][0])
+    print(f"[BETA ANALYSIS] Output directory = {output_dir!r}")
+    print("  (same directory as first input file)")
+
+    print("[BETA ANALYSIS] Copying card file to output directory")
+    shutil.copy(args.config, os.path.join(output_dir, args.config))
 
     if config.get("tmax", False):
         tmax_params = config.get("tmax_params", None)
@@ -62,9 +58,6 @@ def main():
 
     while config["channels"] and config["channels"][-1][0] == 0:
         config["channels"].pop()
-
-    # filtered_channels = [ch for ch in config['channels'] if ch[0] != 0] # drop channels that are not specified in the textCard
-    # modified_channels = [[ch[0], ch[1], (ch[2][0], 1000 if ch[2][1] == 0 else ch[2][1], -100 if ch[2][2] >= 0 else ch[2][2], -50 if ch[2][3] == 0 else ch[2][3], 50 if ch[2][4] == 0 else ch[2][4])] for ch in filtered_channels]
 
     for ch in config["channels"]:
         if ch[0] == 0:
@@ -101,36 +94,32 @@ def main():
     tree_array = []
     output_name_array = []
 
-    for pattern in file_list:
-        root_files = glob.glob(pattern)
-        output_name_const = output_name
-        for root_file in root_files:
-            try:
-                theFile = root.TFile(root_file)
-                file_array.append(theFile)
-                tree_array.append(theFile.Get("Analysis"))
-                # # Old naming: look for Ch#-???V on the expected channels (wrong numbers)
-                # output_name_w_bias = ""
-                # for ch_ind, ch_val in enumerate(config["channels"]):
-                #     if ch_val[0] == 1:
-                #         m = re.search(rf"Ch{ch_ind}-(\d+)V_", root_file)
-                #         bias_after_channel = m.group(1) if m else "0"
-                #         output_name_w_bias = (
-                #             output_name_w_bias
-                #             + f"_Ch{ch_ind}-"
-                #             + bias_after_channel
-                #             + "V"
-                #         )
-                # # New naming: look for Run# and Ch#-???V and trig???V for any ch num
-                # for m in re.finditer(r"Run\d+|Ch\d+-\d+V|trig\d+V", root_file):
-                #     output_name_w_bias += f"_{m[0]}"
-                # # New naming: just take the whole input file name
-                output_name_w_bias = os.path.splitext(os.path.basename(root_file))[0]
-                output_name_const = "hist_" + output_name_const + output_name_w_bias
-                output_name_array.append(output_name_const)
-            except Exception as e:
-                print(f"Error reading {root_file}: {e}")
-                raise
+    for root_file in config["files"]:
+        try:
+            theFile = root.TFile(root_file)
+            file_array.append(theFile)
+            tree_array.append(theFile.Get("Analysis"))
+            # # Old naming: look for Ch#-???V on the expected channels (wrong numbers)
+            # output_name_w_bias = ""
+            # for ch_ind, ch_val in enumerate(config["channels"]):
+            #     if ch_val[0] == 1:
+            #         m = re.search(rf"Ch{ch_ind}-(\d+)V_", root_file)
+            #         bias_after_channel = m.group(1) if m else "0"
+            #         output_name_w_bias = (
+            #             output_name_w_bias
+            #             + f"_Ch{ch_ind}-"
+            #             + bias_after_channel
+            #             + "V"
+            #         )
+            # # New naming: look for Run# and Ch#-???V and trig???V for any ch num
+            # for m in re.finditer(r"Run\d+|Ch\d+-\d+V|trig\d+V", root_file):
+            #     output_name_w_bias += f"_{m[0]}"
+            # # New naming: just take the whole input file name
+            output_name_w_bias = os.path.splitext(os.path.basename(root_file))[0]
+            output_name_array.append(f"hist_{output_name}_{output_name_w_bias}")
+        except Exception as e:
+            print(f"Error reading {root_file!r}: {e}")
+            raise
 
     if len(file_array) == 0:
         print(f"[BETA ANALYSIS] : [FILE READER] No files found.")
@@ -201,7 +190,7 @@ def main():
                 tmax_params[1],
                 tmax_params[2],
                 True,
-                output_name_array[file_ind] + "_tmax.png",
+                os.path.join(output_dir, output_name_array[file_ind] + "_tmax.png"),
                 fit=None,
             )
             plot_tmax.run(file_real, file_ind, tree_array[file_ind], config["channels"])
@@ -216,7 +205,7 @@ def main():
                 pmax_params[1],
                 pmax_params[2],
                 True,
-                output_name_array[file_ind] + "_pmax.png",
+                os.path.join(output_dir, output_name_array[file_ind] + "_pmax.png"),
                 fit=None,
             )
             plot_pmax.run(file_real, file_ind, tree_array[file_ind], config["channels"])
@@ -231,7 +220,7 @@ def main():
                 negpmax_params[1],
                 negpmax_params[2],
                 True,
-                output_name_array[file_ind] + "_negpmax.png",
+                os.path.join(output_dir, output_name_array[file_ind] + "_negpmax.png"),
                 fit=None,
             )
             plot_negpmax.run(
@@ -249,7 +238,7 @@ def main():
                 pmax_params[0],
                 pmax_params[1],
                 pmax_params[2],
-                output_name_array[file_ind] + "_amplitude",
+                os.path.join(output_dir, output_name_array[file_ind] + "_amplitude"),
             )
             amplitude_dfs.append(df_data)
         amplitude_data = pd.concat(amplitude_dfs, ignore_index=True)
@@ -269,7 +258,7 @@ def main():
                 risetime_params[1],
                 risetime_params[2],
                 True,
-                output_name_array[file_ind] + "_risetime.png",
+                os.path.join(output_dir, output_name_array[file_ind] + "_risetime.png"),
                 fit="gaus",
             )
             df_data = plot_risetime.run(
@@ -291,7 +280,7 @@ def main():
                 charge_params[0],
                 charge_params[1],
                 charge_params[2],
-                output_name_array[file_ind] + "_charge",
+                os.path.join(output_dir, output_name_array[file_ind] + "_charge"),
             )
             charge_dfs.append(df_data)
         charge_data = pd.concat(charge_dfs, ignore_index=True)
@@ -307,7 +296,7 @@ def main():
                 rms_params[1],
                 rms_params[2],
                 True,
-                output_name_array[file_ind] + "_rms.png",
+                os.path.join(output_dir, output_name_array[file_ind] + "_rms.png"),
                 fit="gaus",
             )
             df_data = plot_rms.run(
@@ -333,7 +322,7 @@ def main():
                 800,
                 0,
                 800,
-                output_name_array[file_ind] + "_dvdt",
+                os.path.join(output_dir, output_name_array[file_ind] + "_dvdt"),
             )
             dvdt_dfs.append(df_data)
         dvdt_data = pd.concat(dvdt_dfs, ignore_index=True)
@@ -354,7 +343,7 @@ def main():
                 800,
                 0,
                 800,
-                output_name_array[file_ind] + "_dvdt2080",
+                os.path.join(output_dir, output_name_array[file_ind] + "_dvdt2080"),
             )
             dvdt2080_dfs.append(df_data)
         dvdt2080_data = pd.concat(dvdt2080_dfs, ignore_index=True)
@@ -375,7 +364,7 @@ def main():
                 timeres_params[1],
                 timeres_params[2],
                 True,
-                output_name_array[file_ind] + "_timeres.png",
+                os.path.join(output_dir, output_name_array[file_ind] + "_timeres.png"),
             )
             df_data = plot_timeres.run(
                 file_real, file_ind, tree_array[file_ind], config["channels"], mcp_specs
@@ -386,7 +375,12 @@ def main():
         data_out.append(("timeres", time_res_data.sort_values(by=["Channel", "Bias"])))
 
     if len(data_out) > 1:
-        direct_to_table(data_out, config["channels"], output_name, thicknesses)
+        direct_to_table(
+            data_out,
+            config["channels"],
+            os.path.join(output_dir, output_name),
+            thicknesses
+        )
 
     # if args.doDiscretisation: risingEdgeDiscretisation.run(file_array,tree_array,args.ch-1,total_number_channels)
     # if args.doWaveform: plot_waveform.run(file_array,tree_array,args.ch-1,total_number_channels)

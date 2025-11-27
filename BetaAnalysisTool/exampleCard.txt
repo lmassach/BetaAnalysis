@@ -3,8 +3,7 @@
 
 # Specify the list of files to read and analyse here, in comma-separated format string
 
-files = "/home/lmassa/Documents/exflu/TB10/beta_tests_before_TB10/Run0_SC203_W4_test/stats_test_Sr_Run0_Ch1-100V_trig2750V.root,
-         /home/lmassa/Documents/exflu/TB10/beta_tests_before_TB10/Run0_SC203_W4_test/stats_test_Sr_Run0_Ch1-110V_trig2750V.root"
+files = "/home/lmassa/Documents/exflu/TB10/beta_tests_before_TB10/Run0_SC204_W4_test/stats_*.root"
 
 run_safe_mode = True
 
@@ -41,9 +40,9 @@ CH_8 = 0
 #timeres = False
 
 ### Second run
-tmax = True
-pmax = True
-negpmax = True
+tmax = False
+pmax = False
+negpmax = False
 amplitude = True
 risetime = True
 charge = True
@@ -74,8 +73,8 @@ timeres_nB_xL_xU = 200,-2.0,0.0
 
 #CH1_cut = 0,0,0,0,0
 #CH2_cut = 0,0,0,0,0
-CH1_cut = [30,50],0,0,-1.5,0.5
-CH2_cut = [30,30],100,0,-1,1
+CH1_cut = [27,27,27,30],0,0,-2,0.5
+CH2_cut = [30,30,30,30],100,0,-1,1
 CH3_cut = 0,0,0,0,0
 CH4_cut = 0,0,0,0,0
 #CH2_cut = [10,15,20,25,30,30,30,40],0,0,-1.0,2.0

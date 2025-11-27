@@ -38,8 +38,12 @@ def main():
     print(f"[BETA ANALYSIS] Output directory = {output_dir!r}")
     print("  (same directory as first input file)")
 
-    print("[BETA ANALYSIS] Copying card file to output directory")
-    shutil.copy(args.config, os.path.join(output_dir, args.config))
+    copy_card_fp = os.path.join(output_dir, args.config)
+    if os.path.exists(copy_card_fp) and os.path.samefile(args.config, copy_card_fp):
+        print("[BETA ANALYSIS] Card file already in output directory")
+    else:
+        print("[BETA ANALYSIS] Copying card file to output directory")
+        shutil.copy(args.config, copy_card_fp)
 
     if config.get("tmax", False):
         tmax_params = config.get("tmax_params", None)

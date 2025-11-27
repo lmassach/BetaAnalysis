@@ -18,6 +18,7 @@ run_safe_mode = True
 #CH_2 = "DUT, SC, 30"
 #CH_3 = "DUT, SC, 30"
 #CH_4 = "MCP, None, 5, 2"
+
 CH_1 = "DUT, SC, 30"
 CH_2 = "MCP, None, 5, 2"
 CH_3 = 0
@@ -61,7 +62,7 @@ negpmax_nB_xL_xU = 50,-40,10
 
 risetime_nB_xL_xU = 120,0.0,1.2
 charge_nB_xL_xU = 100,0,20
-rms_nB_xL_xU = 40,0,4
+rms_nB_xL_xU = 100,0,10
 timeres_nB_xL_xU = 200,-2.0,0.0
 
 # Specify which selections should be applied to which channel (these are not applied simultaneously unless calculating time resolution)

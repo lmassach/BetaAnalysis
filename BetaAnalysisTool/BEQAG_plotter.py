@@ -101,7 +101,7 @@ def main():
     args = parser.parse_args()
 
     df = pd.read_csv(args.csv_file)
-    base_name = os.path.splitext(os.path.basename(args.csv_file))[0]
+    name_wo_ext = os.path.splitext(args.csv_file)[0]
 
     if args.fluences:
         fluence_values = [float(f) for f in args.fluences.split(",")]
@@ -209,7 +209,7 @@ def main():
         ],
     ]
 
-    output_dir = f"{base_name}_plots"
+    output_dir = f"{name_wo_ext}_plots"
     os.makedirs(output_dir, exist_ok=True)
 
     for i, plot_group in enumerate(columns_to_plot, start=1):
@@ -220,10 +220,11 @@ def main():
                 plot_with_uncertainties(ax, df, x, y, yerr)
             else:
                 plot_without_uncertainties(ax, df, x, y)
-            annotate_plot(ax, args.csv_file, args.subtitle)
+            # TODO Better titles
+            annotate_plot(ax, os.path.basename(args.csv_file), args.subtitle)
 
         plt.tight_layout()
-        save_name = os.path.join(output_dir, f"{base_name}_plotset_{i}.png")
+        save_name = os.path.join(output_dir, f"{os.path.basename(name_wo_ext)}_plotset_{i}.png")
         fig.savefig(save_name, facecolor="white")
         plt.close(fig)
 

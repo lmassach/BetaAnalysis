@@ -201,7 +201,7 @@ def direct_to_table(
         unc_cpt_rms = dfs_comb["RMS Unc / mV"] / dfs_comb["RMS Noise / mV"]
         unc_cpt_risetime = dfs_comb["Rise time Unc / ps"] / dfs_comb["Rise time / ps"]
         unc_cpt_ampl = 0  # idk the unc for a Langaus fit
-        dfs_comb["Approx Jitter Unc / ps"] = dfs_comb["Approx Jitter / ps"] * np.sqrt(
+        dfs_comb["Approx Jitter Unc / ps"] = np.abs(dfs_comb["Approx Jitter / ps"]) * np.sqrt(
             unc_cpt_rms**2 + unc_cpt_risetime**2 + unc_cpt_ampl**2
         )
         dfs_comb.loc[:, "Approx Jitter Unc / ps"] = dfs_comb[

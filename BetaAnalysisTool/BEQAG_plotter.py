@@ -36,7 +36,7 @@ def plot_with_uncertainties(ax, df, x_col, y_col, yerr_col, group_col="Channel")
     ax.set_xlabel(x_col, fontsize=14)
     ax.set_ylabel(y_col, fontsize=14)
     ax.grid(True)
-    ax.legend(fontsize=14, loc="upper right")
+    ax.legend(fontsize=14, loc="best")
 
 
 def plot_without_uncertainties(ax, df, x_col, y_col, group_col="Channel"):
@@ -61,7 +61,7 @@ def plot_without_uncertainties(ax, df, x_col, y_col, group_col="Channel"):
     ax.set_xlabel(x_col, fontsize=14)
     ax.set_ylabel(y_col, fontsize=14)
     ax.grid(True)
-    ax.legend(fontsize=14, loc="upper right")
+    ax.legend(fontsize=14, loc="best")
 
 
 def annotate_plot(ax, filename, subtitle):

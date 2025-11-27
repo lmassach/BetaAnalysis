@@ -53,6 +53,11 @@ def modify_card(input_fp, output_fp, overrides, defaults, comment_begin=None, co
     return defaults
 
 
+def print_and_run(cmd_line, *args, **kwargs):
+    print(f"\x1b[1m+ {shlex.join(cmd_line)}\x1b[0m")
+    run(cmd_line, *args, **kwargs)
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("card_file", help="Card file used as template")
 parser.add_argument("input_files", nargs="+",
@@ -117,9 +122,7 @@ defaults = {
 settings = modify_card(args.card_file, card_copy_fp, overrides, defaults)
 
 # Run step 1
-cmd_line = ['python3', BATRA, card_copy_fp]
-print("+", shlex.join(cmd_line))
-run(cmd_line, check=True)
+print_and_run(['python3', BATRA, card_copy_fp], check=True)
 
 # Prepare modified card file to be edited for step 2
 cut_pmax_lower_template = ','.join('0' * len(input_files))
@@ -152,20 +155,14 @@ modify_card(
 # Let the user edit the card file
 print("--> Please edit card file for step 2 (set cuts) <--")
 print(card_copy_fp)
-cmd_line = [EDITOR, card_copy_fp]
-print("+", shlex.join(cmd_line))
-run(cmd_line, check=True)
+print_and_run([EDITOR, card_copy_fp], check=True)
 
 # Run step 2
-cmd_line = ['python3', BATRA, card_copy_fp]
-print("+", shlex.join(cmd_line))
-run(cmd_line, check=True)
+print_and_run(['python3', BATRA, card_copy_fp], check=True)
 
 # Check for csv and run the plotter
 csv_file = f"{os.path.splitext(card_copy_fp)[0]}.csv"
 if os.path.isfile(csv_file):
-    cmd_line = ['python3', PLOTTER, csv_file, args.subtitle]
-    print("+", shlex.join(cmd_line))
-    run(cmd_line, check=True)
+    print_and_run(['python3', PLOTTER, csv_file, args.subtitle], check=True)
 else:
     print("CSV file not found, skipping BEQAG plots")

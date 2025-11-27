@@ -35,7 +35,11 @@
 
 using namespace std;
 
-void analisi(std::string const& configFile = "beta_config.ini") {
+void analisi(
+  std::string const& configFile = "beta_config.ini",
+  std::string inputFileOverride = "",
+  std::string outputFileOverride = ""
+) {
 
   // Config file definition
   ConfigFile cf(configFile);
@@ -86,20 +90,20 @@ void analisi(std::string const& configFile = "beta_config.ini") {
 
   int n_points_baseline = cf.Value("HEADER", "n_points_baseline");
 
-  std::string Filename = cf.Value("HEADER", "input_filename");
-  std::cout << "Anaysis of file " << Filename << " started" << endl;
-  const char *filename = Filename.c_str();
-  TFile *file = TFile::Open(filename);
+  if (inputFileOverride.empty())
+    inputFileOverride = (std::string)cf.Value("HEADER", "input_filename");
+  std::cout << "Anaysis of file " << inputFileOverride << " started" << endl;
+  TFile *file = TFile::Open(inputFileOverride.c_str());
   TTree *itree = dynamic_cast<TTree *>(file->Get("wfm"));
   TTreeReader myReader("wfm", file);
 
-  std::string outFilename = cf.Value("HEADER", "output_filename");
+  if (outputFileOverride.empty())
+    outputFileOverride = (std::string)cf.Value("HEADER", "output_filename");
   cout << " " << endl;
   cout << "The output file will be: " << endl;
-  cout << outFilename << endl;
+  cout << outputFileOverride << endl;
   cout << " " << endl;
-  const char *output_filename = outFilename.c_str();
-  TFile *OutputFile = new TFile(output_filename, "recreate");
+  TFile *OutputFile = new TFile(outputFileOverride.c_str(), "recreate");
   TTree *OutTree = new TTree("Analysis", "Analysis");
 
   // Variable declaration and Analyzer object

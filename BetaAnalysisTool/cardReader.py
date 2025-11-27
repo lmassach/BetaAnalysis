@@ -53,6 +53,7 @@ def read_text_card(file_path):
                         config[current_key] = []
                         for pattern in "".join(current_value).strip('",').split(","):
                             matches = glob.glob(pattern)
+                            matches.sort()
                             if not matches:
                                 print(f"!! WARNING No file matches {pattern!r}")
                             config[current_key].extend(matches)

@@ -170,213 +170,208 @@ def main():
     if not safemode:
         print(
             "\n\n\n\n    ***************************************************************************************************************************************************************************\n"
-        )
-        print(
-            "    [EPILEPSY WARNING] : This plotter can cause rapid imagery to appear on the screen that may trigger seizures or other symptoms in individuals with photosensitive epilepsy."
-        )
-        print(
-            "     If you experience dizziness, altered vision, muscle twitching, disorientation, or any other unusual symptoms, immediately stop the programme and seek medical attention.\n"
-        )
-        print(
-            "    ***************************************************************************************************************************************************************************\n\n\n\n"
+            "\n    [EPILEPSY WARNING] : This plotter can cause rapid imagery to appear on the screen that may trigger seizures or other symptoms in individuals with photosensitive epilepsy."
+            "\n     If you experience dizziness, altered vision, muscle twitching, disorientation, or any other unusual symptoms, immediately stop the programme and seek medical attention.\n"
+            "\n    ***************************************************************************************************************************************************************************\n\n\n\n"
         )
         input("Press any key to continue")
 
-    data_out = []
-    if config.get("tmax", False) == True:
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] Plotting TMAX distribution (note that for TMAX no selections are applied to the phase space)"
-        )
-        for file_ind, file_real in enumerate(file_array):
-            plot_tmax = plotVar(
-                "tmax",
-                tmax_params[0],
-                tmax_params[1],
-                tmax_params[2],
-                True,
-                os.path.join(output_dir, output_name_array[file_ind] + "_tmax.png"),
-                fit=None,
+    with root.TFile(f"{os.path.join(output_dir, output_name)}.root", "recreate") as output_tfile:
+        data_out = []
+        if config.get("tmax", False) == True:
+            print(
+                f"[BETA ANALYSIS]: [PLOTTER] Plotting TMAX distribution (note that for TMAX no selections are applied to the phase space)"
             )
-            plot_tmax.run(file_real, file_ind, tree_array[file_ind], config["channels"])
-    if config.get("pmax", False) == True:
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] Plotting PMAX distribution (note that for PMAX no selections are applied to the phase space)"
-        )
-        for file_ind, file_real in enumerate(file_array):
-            plot_pmax = plotVar(
-                "pmax",
-                pmax_params[0],
-                pmax_params[1],
-                pmax_params[2],
-                True,
-                os.path.join(output_dir, output_name_array[file_ind] + "_pmax.png"),
-                fit=None,
+            for file_ind, file_real in enumerate(file_array):
+                plot_tmax = plotVar(
+                    "tmax",
+                    tmax_params[0],
+                    tmax_params[1],
+                    tmax_params[2],
+                    True,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_tmax"),
+                    fit=None,
+                )
+                plot_tmax.run(file_real, file_ind, tree_array[file_ind], config["channels"])
+        if config.get("pmax", False) == True:
+            print(
+                f"[BETA ANALYSIS]: [PLOTTER] Plotting PMAX distribution (note that for PMAX no selections are applied to the phase space)"
             )
-            plot_pmax.run(file_real, file_ind, tree_array[file_ind], config["channels"])
-    if config.get("negpmax", False) == True:
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] Plotting NEGPMAX distribution (note that for NEGPMAX no selections are applied to the phase space)"
-        )
-        for file_ind, file_real in enumerate(file_array):
-            plot_negpmax = plotVar(
-                "negpmax",
-                negpmax_params[0],
-                negpmax_params[1],
-                negpmax_params[2],
-                True,
-                os.path.join(output_dir, output_name_array[file_ind] + "_negpmax.png"),
-                fit=None,
+            for file_ind, file_real in enumerate(file_array):
+                plot_pmax = plotVar(
+                    "pmax",
+                    pmax_params[0],
+                    pmax_params[1],
+                    pmax_params[2],
+                    True,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_pmax"),
+                    fit=None,
+                )
+                plot_pmax.run(file_real, file_ind, tree_array[file_ind], config["channels"])
+        if config.get("negpmax", False) == True:
+            print(
+                f"[BETA ANALYSIS]: [PLOTTER] Plotting NEGPMAX distribution (note that for NEGPMAX no selections are applied to the phase space)"
             )
-            plot_negpmax.run(
-                file_real, file_ind, tree_array[file_ind], config["channels"]
+            for file_ind, file_real in enumerate(file_array):
+                plot_negpmax = plotVar(
+                    "negpmax",
+                    negpmax_params[0],
+                    negpmax_params[1],
+                    negpmax_params[2],
+                    True,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_negpmax"),
+                    fit=None,
+                )
+                plot_negpmax.run(
+                    file_real, file_ind, tree_array[file_ind], config["channels"]
+                )
+        if config.get("amplitude", False) == True:
+            amplitude_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                df_data = plot_langaus(
+                    "amplitude",
+                    file_real,
+                    file_ind,
+                    tree_array[file_ind],
+                    config["channels"],
+                    pmax_params[0],
+                    pmax_params[1],
+                    pmax_params[2],
+                    os.path.join(output_dir, output_name_array[file_ind] + "_amplitude"),
+                )
+                amplitude_dfs.append(df_data)
+            amplitude_data = pd.concat(amplitude_dfs, ignore_index=True)
+            print(amplitude_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(
+                ("amplitude", amplitude_data.sort_values(by=["Channel", "Bias"]))
             )
-    if config.get("amplitude", False) == True:
-        amplitude_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            df_data = plot_langaus(
-                "amplitude",
-                file_real,
-                file_ind,
-                tree_array[file_ind],
-                config["channels"],
-                pmax_params[0],
-                pmax_params[1],
-                pmax_params[2],
-                os.path.join(output_dir, output_name_array[file_ind] + "_amplitude"),
+        if config.get("risetime", False) == True:
+            print(
+                f"[BETA ANALYSIS]: [PLOTTER] Performing Gaussian fit to RISETIME distribution"
             )
-            amplitude_dfs.append(df_data)
-        amplitude_data = pd.concat(amplitude_dfs, ignore_index=True)
-        print(amplitude_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(
-            ("amplitude", amplitude_data.sort_values(by=["Channel", "Bias"]))
-        )
-    if config.get("risetime", False) == True:
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] Performing Gaussian fit to RISETIME distribution"
-        )
-        risetime_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            plot_risetime = plotVar(
-                "risetime",
-                risetime_params[0],
-                risetime_params[1],
-                risetime_params[2],
-                True,
-                os.path.join(output_dir, output_name_array[file_ind] + "_risetime.png"),
-                fit="gaus",
-            )
-            df_data = plot_risetime.run(
-                file_real, file_ind, tree_array[file_ind], config["channels"]
-            )
-            risetime_dfs.append(df_data)
-        risetime_data = pd.concat(risetime_dfs, ignore_index=True)
-        print(risetime_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(("risetime", risetime_data.sort_values(by=["Channel", "Bias"])))
-    if config.get("charge", False) == True:
-        charge_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            df_data = plot_langaus(
-                "charge",
-                file_real,
-                file_ind,
-                tree_array[file_ind],
-                config["channels"],
-                charge_params[0],
-                charge_params[1],
-                charge_params[2],
-                os.path.join(output_dir, output_name_array[file_ind] + "_charge"),
-            )
-            charge_dfs.append(df_data)
-        charge_data = pd.concat(charge_dfs, ignore_index=True)
-        print(charge_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(("charge", charge_data.sort_values(by=["Channel", "Bias"])))
-    if config.get("rms", False) == True:
-        print(f"[BETA ANALYSIS]: [PLOTTER] Performing Gaussian fit to DUT channels")
-        rms_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            plot_rms = plotVar(
-                "rms",
-                rms_params[0],
-                rms_params[1],
-                rms_params[2],
-                True,
-                os.path.join(output_dir, output_name_array[file_ind] + "_rms.png"),
-                fit="gaus",
-            )
-            df_data = plot_rms.run(
-                file_real, file_ind, tree_array[file_ind], config["channels"]
-            )
-            rms_dfs.append(df_data)
-        rms_data = pd.concat(rms_dfs, ignore_index=True)
-        print(rms_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(("rms", rms_data.sort_values(by=["Channel", "Bias"])))
+            risetime_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                plot_risetime = plotVar(
+                    "risetime",
+                    risetime_params[0],
+                    risetime_params[1],
+                    risetime_params[2],
+                    True,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_risetime"),
+                    fit="gaus",
+                )
+                df_data = plot_risetime.run(
+                    file_real, file_ind, tree_array[file_ind], config["channels"]
+                )
+                risetime_dfs.append(df_data)
+            risetime_data = pd.concat(risetime_dfs, ignore_index=True)
+            print(risetime_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(("risetime", risetime_data.sort_values(by=["Channel", "Bias"])))
+        if config.get("charge", False) == True:
+            charge_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                df_data = plot_langaus(
+                    "charge",
+                    file_real,
+                    file_ind,
+                    tree_array[file_ind],
+                    config["channels"],
+                    charge_params[0],
+                    charge_params[1],
+                    charge_params[2],
+                    os.path.join(output_dir, output_name_array[file_ind] + "_charge"),
+                )
+                charge_dfs.append(df_data)
+            charge_data = pd.concat(charge_dfs, ignore_index=True)
+            print(charge_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(("charge", charge_data.sort_values(by=["Channel", "Bias"])))
+        if config.get("rms", False) == True:
+            print(f"[BETA ANALYSIS]: [PLOTTER] Performing Gaussian fit to DUT channels")
+            rms_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                plot_rms = plotVar(
+                    "rms",
+                    rms_params[0],
+                    rms_params[1],
+                    rms_params[2],
+                    True,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_rms"),
+                    fit="gaus",
+                )
+                df_data = plot_rms.run(
+                    file_real, file_ind, tree_array[file_ind], config["channels"]
+                )
+                rms_dfs.append(df_data)
+            rms_data = pd.concat(rms_dfs, ignore_index=True)
+            print(rms_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(("rms", rms_data.sort_values(by=["Channel", "Bias"])))
 
-        # ADD IN JITTER CPT MEASUREMENTS, NEED TO GET dvdt BRANCH AND FIT A GAUSSIAN TO MEASURE N_RMS / dV/dt
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] Additionally performing Langaus fit to dV/dt"
-        )
-        dvdt_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            df_data = plot_langaus(
-                "dvdt",
-                file_real,
-                file_ind,
-                tree_array[file_ind],
-                config["channels"],
-                800,
-                0,
-                800,
-                os.path.join(output_dir, output_name_array[file_ind] + "_dvdt"),
+            # ADD IN JITTER CPT MEASUREMENTS, NEED TO GET dvdt BRANCH AND FIT A GAUSSIAN TO MEASURE N_RMS / dV/dt
+            print(
+                f"[BETA ANALYSIS]: [PLOTTER] Additionally performing Langaus fit to dV/dt"
             )
-            dvdt_dfs.append(df_data)
-        dvdt_data = pd.concat(dvdt_dfs, ignore_index=True)
-        print(dvdt_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(("dvdt", dvdt_data.sort_values(by=["Channel", "Bias"])))
+            dvdt_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                df_data = plot_langaus(
+                    "dvdt",
+                    file_real,
+                    file_ind,
+                    tree_array[file_ind],
+                    config["channels"],
+                    800,
+                    0,
+                    800,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_dvdt"),
+                )
+                dvdt_dfs.append(df_data)
+            dvdt_data = pd.concat(dvdt_dfs, ignore_index=True)
+            print(dvdt_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(("dvdt", dvdt_data.sort_values(by=["Channel", "Bias"])))
 
-        print(
-            f"[BETA ANALYSIS]: [PLOTTER] And performing the same for the dV/dt_2080 branch"
-        )
-        dvdt2080_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            df_data = plot_langaus(
-                "dvdt_2080",
-                file_real,
-                file_ind,
-                tree_array[file_ind],
-                config["channels"],
-                800,
-                0,
-                800,
-                os.path.join(output_dir, output_name_array[file_ind] + "_dvdt2080"),
+            print(
+                f"[BETA ANALYSIS]: [PLOTTER] And performing the same for the dV/dt_2080 branch"
             )
-            dvdt2080_dfs.append(df_data)
-        dvdt2080_data = pd.concat(dvdt2080_dfs, ignore_index=True)
-        print(dvdt2080_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(
-            ("dvdt_2080", dvdt2080_data.sort_values(by=["Channel", "Bias"]))
-        )
+            dvdt2080_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                df_data = plot_langaus(
+                    "dvdt_2080",
+                    file_real,
+                    file_ind,
+                    tree_array[file_ind],
+                    config["channels"],
+                    800,
+                    0,
+                    800,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_dvdt2080"),
+                )
+                dvdt2080_dfs.append(df_data)
+            dvdt2080_data = pd.concat(dvdt2080_dfs, ignore_index=True)
+            print(dvdt2080_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(
+                ("dvdt_2080", dvdt2080_data.sort_values(by=["Channel", "Bias"]))
+            )
 
-    if config.get("timeres", False) == True:
-        print(
-            f"[BETA ANALYSIS]: [TIME RESOLUTION] Performing Gaussian fit to DUT-MCP channels"
-        )
-        time_res_dfs = []
-        for file_ind, file_real in enumerate(file_array):
-            plot_timeres = plotTRVar(
-                "timeres",
-                timeres_params[0],
-                timeres_params[1],
-                timeres_params[2],
-                True,
-                os.path.join(output_dir, output_name_array[file_ind] + "_timeres.png"),
+        if config.get("timeres", False) == True:
+            print(
+                f"[BETA ANALYSIS]: [TIME RESOLUTION] Performing Gaussian fit to DUT-MCP channels"
             )
-            df_data = plot_timeres.run(
-                file_real, file_ind, tree_array[file_ind], config["channels"], mcp_specs
-            )
-            time_res_dfs.append(df_data)
-        time_res_data = pd.concat(time_res_dfs, ignore_index=True)
-        print(time_res_data.sort_values(by=["Channel", "Bias"]))
-        data_out.append(("timeres", time_res_data.sort_values(by=["Channel", "Bias"])))
+            time_res_dfs = []
+            for file_ind, file_real in enumerate(file_array):
+                plot_timeres = plotTRVar(
+                    "timeres",
+                    timeres_params[0],
+                    timeres_params[1],
+                    timeres_params[2],
+                    True,
+                    os.path.join(output_dir, output_name_array[file_ind] + "_timeres"),
+                )
+                df_data = plot_timeres.run(
+                    file_real, file_ind, tree_array[file_ind], config["channels"], mcp_specs
+                )
+                time_res_dfs.append(df_data)
+            time_res_data = pd.concat(time_res_dfs, ignore_index=True)
+            print(time_res_data.sort_values(by=["Channel", "Bias"]))
+            data_out.append(("timeres", time_res_data.sort_values(by=["Channel", "Bias"])))
 
     if len(data_out) > 1:
         direct_to_table(

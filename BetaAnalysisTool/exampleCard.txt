@@ -58,7 +58,7 @@ timeres = True
 
 tmax_nB_xL_xU = 1000,-6,2
 pmax_nB_xL_xU = 1000,0,200
-negpmax_nB_xL_xU = 50,-40,10
+negpmax_nB_xL_xU = 100,-90,10
 
 risetime_nB_xL_xU = 300,0.0,3.0
 charge_nB_xL_xU = 500,0,100

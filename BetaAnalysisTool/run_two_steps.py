@@ -58,12 +58,20 @@ def print_and_run(cmd_line, *args, **kwargs):
     run(cmd_line, *args, **kwargs)
 
 
+def list_t_dir(td):
+    for name in sorted({x.GetName() for x in td.GetListOfKeys()}):
+        yield name, td[name]
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("card_file", help="Card file used as template")
 parser.add_argument("input_files", nargs="+",
                     help="Input stats_*.root files (glob supported)")
-parser.add_argument("--subtitle", default='subtitle',  # TODO Find better default
+parser.add_argument("--subtitle", default=None,
                     help="Subtitle for the BEQAG plots of the CSV")
+parser.add_argument("--no-gui", action="store_true",
+                    help="Disable displaying histograms in canvas windows"
+                         " while editing the cuts in the card file")
 args = parser.parse_args()
 
 # List input files expanding glob patterns
@@ -124,6 +132,43 @@ settings = modify_card(args.card_file, card_copy_fp, overrides, defaults)
 # Run step 1
 print_and_run(['python3', BATRA, card_copy_fp], check=True)
 
+if not args.no_gui:
+    import ROOT  # To save time & memory, only import if actually used
+    ROOT.gStyle.SetPalette(ROOT.kDeepSea)
+    ROOT.gStyle.SetOptStat(0)
+    tf = ROOT.TFile(f"{os.path.splitext(card_copy_fp)[0]}.root")
+    canvases = {}  # {ch_index: TCanvas}
+    legends = {}  # {(ch_index, var_name): TLegend}
+    for vi, vn in enumerate(["pmax", "negpmax", "tmax"]):
+        for subdir_name, subdir in list_t_dir(tf[vn]):
+            for hist_name, hist in list_t_dir(subdir):
+                if m := re.match(r"CH(\d+)_(.+)", hist_name):
+                    ch = int(m[1])
+                    if ch in canvases:
+                        c = canvases[ch]
+                    else:
+                        c = ROOT.TCanvas(f"CH{ch}", f"CH{ch}", 400*3, 300)
+                        c.Divide(3)
+                        canvases[ch] = c
+                    c.cd(vi+1)
+                    if (ch, vn) in legends:  # Not 1st histogram in this pad
+                        hist.Draw("HIST SAME PLC")
+                    else:
+                        hist.SetTitle(f"CH{ch} - {hist.GetTitle()}")
+                        hist.Draw("HIST PLC")
+                        ROOT.gPad.SetLogy()
+                        ROOT.gPad.SetGridx()
+                        leg = ROOT.TLegend(0.8, 0.8, 0.9, 0.9)
+                        legends[(ch, vn)] = leg
+                    legends[(ch, vn)].AddEntry(hist, m[2], "L")
+        for ch, c in canvases.items():
+            c.cd(vi+1)
+            leg = legends[(ch, vn)]
+            leg.SetY1NDC(leg.GetY2NDC() - 0.04 * leg.GetNRows())
+            leg.Draw()
+    for c in canvases.values():
+        c.Update()
+
 # Prepare modified card file to be edited for step 2
 cut_pmax_lower_template = ','.join('0' * len(input_files))
 cut_template = f'[{cut_pmax_lower_template}],0,0,0,0'
@@ -137,9 +182,9 @@ overrides = {
     'CH6_cut': cut_template if settings['CH_6'] != '0' else '0,0,0,0,0',
     'CH7_cut': cut_template if settings['CH_7'] != '0' else '0,0,0,0,0',
     'CH8_cut': cut_template if settings['CH_8'] != '0' else '0,0,0,0,0',
-    'tmax': 'False',
-    'pmax': 'False',
-    'negpmax': 'False',
+    'tmax': 'True',
+    'pmax': 'True',
+    'negpmax': 'True',
     'amplitude': 'True',
     'risetime': 'True',
     'charge': 'True',
@@ -157,12 +202,19 @@ print("--> Please edit card file for step 2 (set cuts) <--")
 print(card_copy_fp)
 print_and_run([EDITOR, card_copy_fp], check=True)
 
+# Close the canvases and the root file
+if not args.no_gui:
+    for c in canvases.values():
+        c.Close()
+    tf.Close()
+
 # Run step 2
 print_and_run(['python3', BATRA, card_copy_fp], check=True)
 
 # Check for csv and run the plotter
 csv_file = f"{os.path.splitext(card_copy_fp)[0]}.csv"
 if os.path.isfile(csv_file):
-    print_and_run(['python3', PLOTTER, csv_file, args.subtitle], check=True)
+    subtitle = args.subtitle or os.path.basename(output_dir)
+    print_and_run(['python3', PLOTTER, csv_file, subtitle], check=True)
 else:
     print("CSV file not found, skipping BEQAG plots")

@@ -37,6 +37,10 @@ class plotTRVar:
         channel_of_dut = []
         mcp_exists = False
 
+        out_root_dir = None
+        if root.gDirectory.IsWritable():
+            out_root_dir = root.gDirectory.mkdir(f"timeres/{file_index:02d}", os.path.basename(self.save_name), True)
+
         for j in range(len(channel_array)):
             if channel_array[j][0] == 1:
                 bias = getBias(file, j)
@@ -110,6 +114,8 @@ class plotTRVar:
                 num_ev = thisHist.GetEntries()
                 if dut_var_ind == 0:
                     hists_to_plot.append(thisHist)
+                if out_root_dir is not None:
+                    out_root_dir.WriteObject(thisHist, f"CH{j}_{bias:.0f}V")
                 hist_down_up_dev.append(thisHist)
             arr_of_hists.append(hist_down_up_dev)
             arr_of_biases.append(bias)
@@ -150,7 +156,7 @@ class plotTRVar:
         out_dir = os.path.join(os.path.dirname(self.save_name), "timeres")
         os.makedirs(out_dir, exist_ok=True)
         out_fp = os.path.join(out_dir, os.path.basename(self.save_name))
-        c1.SaveAs(out_fp)
+        c1.SaveAs(f"{out_fp}.png")
         print(f"[BETA ANALYSIS]: [TIME RESOLUTION] Saved time resolution as {out_fp!r}")
 
         arr_of_fits = []
@@ -165,6 +171,8 @@ class plotTRVar:
                     channel_of_dut[i],
                     arr_of_biases[i],
                 )
+                if out_root_dir is not None:
+                    out_root_dir.WriteObject(thisFit, f"fit_CH{i}_{arr_of_biases[i]:.0f}V")
                 fit_down_up_dev.append(thisFit)
             arr_of_fits.append(fit_down_up_dev)
 

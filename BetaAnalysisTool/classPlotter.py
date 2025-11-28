@@ -33,6 +33,10 @@ class plotVar:
                 condition = f"pmax[{i}] > {A[file_index]} && pmax[{i}] < {B} && negpmax[{i}] > {C} && tmax[{i}] > {D} && tmax[{i}] < {E}"
             result.append(condition)
 
+        out_root_dir = None
+        if root.gDirectory.IsWritable():
+            out_root_dir = root.gDirectory.mkdir(f"{self.var}/{file_index:02d}", os.path.basename(self.save_name), True)
+
         channel_of_dut = []
         for j in range(len(channel_array)):
             bias = getBias(file, j)
@@ -51,6 +55,8 @@ class plotVar:
                     result[j],
                     j,
                 )
+                if out_root_dir is not None:
+                    out_root_dir.WriteObject(thisHist, f"CH{j}_{bias:.0f}V")
                 num_ev = thisHist.GetEntries()
             else:
                 thisHist = None
@@ -86,6 +92,8 @@ class plotVar:
                         i,
                         arr_of_biases[i],
                     )
+                    if out_root_dir is not None:
+                        out_root_dir.WriteObject(thisFit, f"fit_{thisHist.GetName()}")
                     arr_of_fits.append(thisFit)
                     thisFit.Draw("SAME")
                 else:
@@ -99,7 +107,7 @@ class plotVar:
         out_dir = os.path.join(os.path.dirname(self.save_name), self.var)
         os.makedirs(out_dir, exist_ok=True)
         out_fp = os.path.join(out_dir, os.path.basename(self.save_name))
-        c1.SaveAs(out_fp)
+        c1.SaveAs(f"{out_fp}.png")
         print(f"[BETA ANALYSIS]: [PLOTTER] Saved {self.var} as {out_fp!r}")
 
         if (self.fit) is not None:

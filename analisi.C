@@ -126,6 +126,11 @@ void analisi(
   std::vector<double> UArea1_new;
   std::vector<double> DC_Area1;
   std::vector<double> RiseTime1Fit;
+  std::vector<double> RiseTimeLinFit;
+  std::vector<double> RiseTimeRELUFit;
+  std::vector<double> RiseTime1Fit2080;
+  std::vector<double> RiseTimeLinFit2080;
+  std::vector<double> RiseTimeRELUFit2080;
   std::vector<double> FallTime1Fit;
   std::vector<double> dVdt1Fit;
   std::vector<double> dVdt1Fit_2080;
@@ -152,6 +157,11 @@ void analisi(
   UArea1_new.reserve(20);
   DC_Area1.reserve(20);
   RiseTime1Fit.reserve(20);
+  RiseTimeLinFit.reserve(20);
+  RiseTimeRELUFit.reserve(20);
+  RiseTime1Fit2080.reserve(20);
+  RiseTimeLinFit2080.reserve(20);
+  RiseTimeRELUFit2080.reserve(20);
   FallTime1Fit.reserve(20);
   dVdt1Fit.reserve(20);
   dVdt1Fit_2080.reserve(20);
@@ -184,6 +194,11 @@ void analisi(
   OutTree->Branch("uarea_new", "std::vector<double>", &UArea1_new);
   OutTree->Branch("dc_area", "std::vector<double>", &DC_Area1);
   OutTree->Branch("risetime", "std::vector<double>", &RiseTime1Fit);
+  OutTree->Branch("risetime_lin", "std::vector<double>", &RiseTimeLinFit);
+  OutTree->Branch("risetime_relu", "std::vector<double>", &RiseTimeRELUFit);
+  OutTree->Branch("risetime_2080", "std::vector<double>", &RiseTime1Fit2080);
+  OutTree->Branch("risetime_lin_2080", "std::vector<double>", &RiseTimeLinFit2080);
+  OutTree->Branch("risetime_relu_2080", "std::vector<double>", &RiseTimeRELUFit2080);
   OutTree->Branch("falltime", "std::vector<double>", &FallTime1Fit);
   OutTree->Branch("dvdt", "std::vector<double>", &dVdt1Fit);
   OutTree->Branch("dvdt_2080", "std::vector<double>", &dVdt1Fit_2080);
@@ -258,6 +273,11 @@ void analisi(
     UArea1_new.clear();
     DC_Area1.clear();
     RiseTime1Fit.clear();
+    RiseTimeLinFit.clear();
+    RiseTimeRELUFit.clear();
+    RiseTime1Fit2080.clear();
+    RiseTimeLinFit2080.clear();
+    RiseTimeRELUFit2080.clear();
     FallTime1Fit.clear();
     dVdt1Fit.clear();
     dVdt1Fit_2080.clear();
@@ -270,6 +290,9 @@ void analisi(
     t1.clear();
 
     int active_ch_counter = 0;
+    // bool time_patch_t0_ok = false;
+    // double time_patch_t0 = 0.0;
+    bool skip_event = false;
     for (int ch_counter = 1; ch_counter <= 8; ch_counter++) {
 
       std::vector<double> w1_inner;
@@ -279,6 +302,14 @@ void analisi(
       t1_inner.reserve(221560);
 
       if (active_channel[ch_counter - 1] == 1) {
+
+        // // Patch time array
+        // if (!time_patch_t0_ok) {
+        //   time_patch_t0 = timeReader1.at(active_ch_counter).At(0);
+        //   time_patch_t0_ok = true;
+        // }
+        // for (std::size_t i = 0; i < timeReader1.at(active_ch_counter).GetSize(); ++i)
+        //   timeReader1.at(active_ch_counter).At(i) -= time_patch_t0;
 
         if (j_counter == 0) {
 
@@ -311,33 +342,37 @@ void analisi(
           }
         }
 
-        w1.push_back(w1_inner);
-        t1.push_back(t1_inner);
 
         if (w1_inner.size() < maxIndex || t1_inner.size() < maxIndex) {
 
           cout << "Voltage or Time vector less than sampling_points entries. Skipping "
-                  "whole event"
-               << endl;
-          continue;
+          "whole event"
+          << endl;
+          skip_event = true;
+          break;
         }
 
         if (w1_inner.size() == 0 || t1_inner.size() == 0) {
 
           cout << "Voltage or Time vector empty. Skipping whole event" << endl;
-          continue;
+          skip_event = true;
+          break;
         }
 
         if (w1_inner.size() != t1_inner.size()) {
 
           cout << "Different number of entries in Voltage and Time vectors. "
-                  "Skipping whole event"
-               << endl;
-          continue;
+          "Skipping whole event"
+          << endl;
+          skip_event = true;
+          break;
         }
 
         *a1 = Analyzer(w1_inner, t1_inner);
         double baseline_correction = a1->Correct_Baseline(n_points_baseline);
+
+        w1.push_back(a1->getVoltages());
+        t1.push_back(a1->getTimes());
 
         std::pair<double, unsigned int> tp_pair1 =
             a1->Find_Signal_Maximum(pmax_search_range, search_range);
@@ -367,8 +402,23 @@ void analisi(
         DC_Area1.push_back(a1->DC_Area(baseline_correction) * voltage_const *
                            time_const); // mV*ns
         RiseTime1Fit.push_back(a1->Find_Rise_Time_with_GausFit(
-                                   tp_pair1_fit, tp_pair1.second, 0.1, 0.9) *
-                               time_const); // ns
+          tp_pair1_fit, tp_pair1.second, 0.1, 0.9
+        ) * time_const); // ns
+        RiseTimeLinFit.push_back(a1->Find_Rise_Time_with_LinFit_Rob(
+          tp_pair1_fit, tp_pair1.second, 0.1, 0.9
+        ) * time_const); // ns
+        RiseTimeRELUFit.push_back(a1->Find_Rise_Time_with_RELU_fit(
+          tp_pair1_fit, tp_pair1.second, 0.1, 0.9
+        ) * time_const); // ns
+        RiseTime1Fit2080.push_back(a1->Find_Rise_Time_with_GausFit(
+          tp_pair1_fit, tp_pair1.second, 0.2, 0.8
+        ) * time_const); // ns
+        RiseTimeLinFit2080.push_back(a1->Find_Rise_Time_with_LinFit_Rob(
+          tp_pair1_fit, tp_pair1.second, 0.2, 0.8
+        ) * time_const); // ns
+        RiseTimeRELUFit2080.push_back(a1->Find_Rise_Time_with_RELU_fit(
+          tp_pair1_fit, tp_pair1.second, 0.2, 0.8
+        ) * time_const); // ns
         FallTime1Fit.push_back(a1->Find_Fall_Time_with_GausFit(
                                    tp_pair1_fit, tp_pair1.second, 0.1, 0.9) *
                                time_const); // ns
@@ -412,6 +462,9 @@ void analisi(
         active_ch_counter++;
       }
     }
+
+    if (skip_event)
+      continue;
 
     event = j_counter;
 

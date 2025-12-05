@@ -99,6 +99,12 @@ public:
   double Find_Rise_Time_with_GausFit(const std::pair<double, double> Pmax,
                                      unsigned int imax, double bottom = 0.1,
                                      double top = 0.9);
+  double Find_Rise_Time_with_RELU_fit(const std::pair<double, double> Pmax,
+                                      unsigned int imax, double bottom = 0.1,
+                                      double top = 0.9);
+  double Find_Rise_Time_with_LinFit_Rob(const std::pair<double, double> Pmax,
+                                        unsigned int imax, double bottom = 0.1,
+                                        double top = 0.9);
   double Find_Fall_Time_with_GausFit(const std::pair<double, double> Pmax,
                                      unsigned int imax, double bottom = 0.1,
                                      double top = 0.9);
@@ -178,6 +184,9 @@ public:
     std::vector<double> &time_at_threshold_v,
     const unsigned int  expect_count = 6
   );*/
+
+  inline std::vector<double> const& getVoltages() const { return pvoltage; }
+  inline std::vector<double> const& getTimes() const { return ptime; }
 
 private:
   std::vector<double> pvoltage;

@@ -25,6 +25,8 @@ parser.add_argument("--out-prefix", default="stats_",
                     help="Prefix for the output file names; default: %(default)s")
 args = parser.parse_args()
 
+ROOT.gROOT.SetBatch(True)
+
 for src in SRC_FILES:
     print(f"Compiling/loading {src}")
     ROOT.gSystem.CompileMacro(src, "kg")
